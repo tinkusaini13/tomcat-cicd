@@ -34,11 +34,7 @@ pipeline {
             steps {
                 script {
                     // Deploy the application (if applicable)
-                    // Example: deploy to a Maven repository
-                    def mvnHome = tool 'Maven'
-                    def mavenCmd = "${mvnHome}/bin/mvn"
-
-                    sh "${mavenCmd} deploy"
+                    sh "mvn deploy"
                 }
             }
         }
@@ -46,8 +42,6 @@ pipeline {
         stage('Clean Up') {
             steps {
                 script {
-                    // Clean up workspace or perform any post-build actions
-                    // Example: remove target directory
                     deleteDir()
                 }
             }
