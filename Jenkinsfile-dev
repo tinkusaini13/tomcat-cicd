@@ -12,7 +12,6 @@ pipeline {
             steps {
                 script {
                     sh  "mvn clean package"
-                    archive 'target/*.jar'
                 }
             }
         }
@@ -22,15 +21,6 @@ pipeline {
                 script {
                     // Run tests using Maven
                     sh "mvn test"
-                }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                script {
-                    // Deploy the application (if applicable)
-                    //sh "mvn deploy"
                 }
             }
         }
