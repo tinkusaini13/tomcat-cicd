@@ -15,12 +15,8 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Use the 'tool' step to ensure the correct Maven version
-                    def mvnHome = tool 'Maven'
-                    def mavenCmd = "${mvnHome}/bin/mvn"
-                    
-                    // Maven build command
-                    sh "${mavenCmd} clean package"
+                    sh  "mvn clean package"
+                    archive 'target/*.jar'
                 }
             }
         }
@@ -29,10 +25,7 @@ pipeline {
             steps {
                 script {
                     // Run tests using Maven
-                    def mvnHome = tool 'Maven'
-                    def mavenCmd = "${mvnHome}/bin/mvn"
-
-                    sh "${mavenCmd} test"
+                    sh "mvn test"
                 }
             }
         }
