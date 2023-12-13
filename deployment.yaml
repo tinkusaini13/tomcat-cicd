@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: devops-training
-        image: deekshithsn/devops-training:docker_tag
+        image: sainiji/tomcat:app1
         command: ["/bin/sh"]
         args: ["-c","sh /usr/local/tomcat/bin/startup.sh;while true; do echo hello; sleep 10;done"]
         ports:
@@ -24,7 +24,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: devops-training-app-service
+  name: tomcat-app-service
   labels:
     app: devops-training
 spec:
