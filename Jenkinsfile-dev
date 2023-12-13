@@ -1,0 +1,75 @@
+pipeline {
+    agent any
+
+    environment {
+        JAVA_HOME = tool 'Maven' 
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/tinkusaini13/tomcat-cicd.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    // Use the 'tool' step to ensure the correct Maven version
+                    def mvnHome = tool 'Maven'
+                    def mavenCmd = "${mvnHome}/bin/mvn"
+                    
+                    // Maven build command
+                    sh "${mavenCmd} clean package"
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    // Run tests using Maven
+                    def mvnHome = tool 'Maven'
+                    def mavenCmd = "${mvnHome}/bin/mvn"
+
+                    sh "${mavenCmd} test"
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // Deploy the application (if applicable)
+                    // Example: deploy to a Maven repository
+                    def mvnHome = tool 'Maven'
+                    def mavenCmd = "${mvnHome}/bin/mvn"
+
+                    sh "${mavenCmd} deploy"
+                }
+            }
+        }
+
+        stage('Clean Up') {
+            steps {
+                script {
+                    // Clean up workspace or perform any post-build actions
+                    // Example: remove target directory
+                    deleteDir()
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            // Actions to be performed when the build is successful
+            echo 'Build successful!'
+        }
+
+        failure {
+            // Actions to be performed when the build fails
+            echo 'Build failed!'
+        }
+    }
+}
