@@ -30,7 +30,7 @@ pipeline {
             steps {
                 script {
                     // Deploy the application (if applicable)
-                    sh "mvn deploy"
+                    //sh "mvn deploy"
                 }
             }
         }
