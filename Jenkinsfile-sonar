@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+
+    environment {
+        SONAR_PROJECT_KEY = 'mvn-jenkins-project'
+        SONAR_PROJECT_NAME = 'mvn-jenkins-project'
+        SONAR_URL = 'http://18.60.158.12:9000'
+        SONAR_TOKEN = 'sqp_93b2d90e6db6dab1c7f7f1829d50e771a3fc5c2b'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    sh 'mvn clean package'
+                    archive 'target/*.war'
+                }
+            }
+        }
+
+        stage('Sonarqube analysis - SAST') {
+            steps {
+                script {
+                    withSonarQubeEnv('SonarQube') {
+                        sh "mvn clean verify sonar:sonar \
+                            -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                            -Dsonar.projectName=${SONAR_PROJECT_NAME} \
+                            -Dsonar.host.url=${SONAR_URL} \
+                            -Dsonar.login=${SONAR_TOKEN}"
+                    }
+                }
+            }
+        }
+
+        stage('Clean Up') {
+            steps {
+                script {
+                    deleteDir()
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build successful!'
+        }
+
+        failure {
+            echo 'Build failed!'
+        }
+    }
+}
