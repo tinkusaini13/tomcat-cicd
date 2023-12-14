@@ -17,14 +17,16 @@ pipeline {
             }
         }
 
-        stage('Test') {
-            steps {
-                script {
-                    // Run tests using Maven
-                    sh "mvn test"
-                }
+       stage('Sonarqube analysis - SAST') {
+         step {
+            withSonarQubeEnv('SonarQube') {
+                   sh "mvn sonar:sonar" \
+                             -Dsonar.projectKey=mvn-jenkins-project \ 
+                         -Dsonar.host.url=http://18.60.158.12:9000/"
+
+                  }
             }
-        }
+      }
 
         stage('Clean Up') {
             steps {
