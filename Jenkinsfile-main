@@ -26,11 +26,7 @@ pipeline {
         stage('Sonarqube analysis - SAST') {
            step {
                 withSonarQubeEnv('SonarQube') {
-                    mvn clean verify sonar:sonar \
-                          -Dsonar.projectKey=mvn-jenkins-project \
-                          -Dsonar.projectName='mvn-jenkins-project' \
-                          -Dsonar.host.url=http://18.60.158.12:9000 \
-                          -Dsonar.token=sqp_93b2d90e6db6dab1c7f7f1829d50e771a3fc5c2b
+                    mvn clean verify sonar:sonar  -Dsonar.projectKey=mvn-jenkins-project    -Dsonar.projectName='mvn-jenkins-project'   -Dsonar.host.url="http://18.60.158.12:9000"  Dsonar.token=sqp_93b2d90e6db6dab1c7f7f1829d50e771a3fc5c2b
                   }
             }
       }
