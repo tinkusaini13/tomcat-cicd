@@ -4,6 +4,10 @@ pipeline {
     environment {
         TOMCAT_HOME = '/opt/tomcat'  
         WAR_FILE = 'cloud.war'  
+        SONAR_PROJECT_KEY = 'mvn-jenkins-project'
+        SONAR_PROJECT_NAME = 'mvn-jenkins-project'
+        SONAR_URL = 'http://18.60.158.12:9000'
+        SONAR_TOKEN = 'sqp_93b2d90e6db6dab1c7f7f1829d50e771a3fc5c2b'
     }
 
     stages {
@@ -24,23 +28,25 @@ pipeline {
         }
 
         stage('Sonarqube analysis - SAST') {
-           step {
-                withSonarQubeEnv('SonarQube') {
-                   mvn clean verify sonar:sonar \
-                    -Dsonar.projectKey=mvn-jenkins-project \
-                    -Dsonar.projectName='mvn-jenkins-project' \
-                   -Dsonar.host.url=http://18.60.158.12:9000 \
-                   -Dsonar.token=sqp_93b2d90e6db6dab1c7f7f1829d50e771a3fc5c2b
-                  }
+            steps {
+                script {
+                    withSonarQubeEnv('SonarQube') {
+                        sh "mvn clean verify sonar:sonar \
+                            -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                            -Dsonar.projectName=${SONAR_PROJECT_NAME} \
+                            -Dsonar.host.url=${SONAR_URL} \
+                            -Dsonar.login=${SONAR_TOKEN}"
+                    }
+                }
             }
-      }
+        }
 
         stage('Deploy to Tomcat') {
             steps {
                 script {
-                    sh "${TOMCAT_HOME}/bin/shutdown.sh"
-                    sh "cp target/${WAR_FILE} ${TOMCAT_HOME}/webapps/"
-                    sh "${TOMCAT_HOME}/bin/startup.sh"
+                   // sh "${TOMCAT_HOME}/bin/shutdown.sh"
+                   // sh "cp target/${WAR_FILE} ${TOMCAT_HOME}/webapps/"
+                   // sh "${TOMCAT_HOME}/bin/startup.sh"
                 }
             }
         }
@@ -48,8 +54,7 @@ pipeline {
         stage('Verify Deployment') {
             steps {
                 script {
-                    sleep 30  
-                   // sh "curl -I http://localhost:8080/your-application"  
+                    sleep 30
                     sh "curl -I http://localhost"
                 }
             }
