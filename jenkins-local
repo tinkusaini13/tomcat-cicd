@@ -1,0 +1,65 @@
+pipeline {
+    agent any
+
+    environment {
+        TOMCAT_HOME = '/opt/tomcat'  
+        WAR_FILE = 'WebApp.war'  
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+                git branch: 'main', url: 'https://github.com/tinkusaini13/tomcat-cicd.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    sh 'mvn clean package'        
+                }
+            }
+        }
+
+        stage('Deploy to Tomcat') {
+            steps {
+                script {
+                    // Use && to chain commands, ensuring the next one runs only if the previous one succeeds
+                    sh "${TOMCAT_HOME}/bin/shutdown.sh && cp target/${WAR_FILE} ${TOMCAT_HOME}/webapps/ && ${TOMCAT_HOME}/bin/startup.sh"
+                }
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                script {
+                    // Use retry to check the URL multiple times
+                    retry(3) {
+                        // Add a delay before checking the URL
+                        sleep time: 30, unit: 'SECONDS'
+                        sh "curl -I http://localhost:8081/WebApp"
+                    }
+                }
+            }
+        }
+
+        stage('Clean Up') {
+            steps {
+                script {
+                    deleteDir()
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deployment successful!'
+        }
+
+        failure {
+            echo 'Deployment failed!'
+        }
+    }
+}
