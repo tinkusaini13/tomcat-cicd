@@ -28,7 +28,7 @@ pipeline {
             steps {
                 script {
                     // Use Jenkins credentials to securely provide username and password
-                    withCredentials([usernamePassword(credentialsId: tomcat_dev, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    withCredentials([usernamePassword(credentialsId: 'tomcat_dev', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         // Use && to chain commands, ensuring the next one runs only if the previous one succeeds
                         sh "/opt/tomcat/bin/shutdown.sh"
                         sh "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null target/${WAR_FILE} ${REMOTE_SERVER}:/opt/tomcat/webapps/"
