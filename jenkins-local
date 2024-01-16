@@ -29,7 +29,7 @@ pipeline {
                 script {
                     // Use Jenkins credentials to securely provide username and password
                     withCredentials([usernamePassword(credentialsId: 'tomcat_dev', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                        sh "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null target/${WAR_FILE} ${REMOTE_SERVER}:/opt/tomcat/webapps/"
+                        sh "scp -o StrictHostKeyChecking=no -o  target/${WAR_FILE} ${REMOTE_SERVER}:/opt/tomcat/webapps/"
                     }
                 }
             }
