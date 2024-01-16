@@ -2,8 +2,10 @@ pipeline {
     agent any
 
     environment {
-        TOMCAT_HOME = '/opt/tomcat'  
-        WAR_FILE = 'WebApp.war'  
+        
+        WAR_FILE = 'WebApp.war'
+        REMOTE_SERVER = 'tomcat@15.206.93.6' // Update with your remote server details
+        CREDENTIAL_ID = 'tomcat_dev' // Update with your Jenkins credential ID
     }
 
     stages {
@@ -17,7 +19,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    sh 'mvn clean package'        
+                    sh 'mvn clean package'
                 }
             }
         }
@@ -25,8 +27,13 @@ pipeline {
         stage('Deploy to Tomcat') {
             steps {
                 script {
-                    // Use && to chain commands, ensuring the next one runs only if the previous one succeeds
-                    sh "${TOMCAT_HOME}/bin/shutdown.sh && cp target/${WAR_FILE} ${TOMCAT_HOME}/webapps/ && ${TOMCAT_HOME}/bin/startup.sh"
+                    // Use Jenkins credentials to securely provide username and password
+                    withCredentials([usernamePassword(credentialsId: tomcat_dev, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        // Use && to chain commands, ensuring the next one runs only if the previous one succeeds
+                        sh "/opt/tomcat/bin/shutdown.sh"
+                        sh "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null target/${WAR_FILE} ${REMOTE_SERVER}:/opt/tomcat/webapps/"
+                        sh "/opt/tomcat/bin/startup.sh"
+                    }
                 }
             }
         }
@@ -38,7 +45,7 @@ pipeline {
                     retry(3) {
                         // Add a delay before checking the URL
                         sleep time: 30, unit: 'SECONDS'
-                        sh "curl -I http://localhost:8081/WebApp"
+                        sh "curl -I http://15.206.93.6:8081/WebApp"
                     }
                 }
             }
