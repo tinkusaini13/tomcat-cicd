@@ -19,7 +19,7 @@ pipeline {
         stage('Deploy to Tomcat') {
             steps {
                 script {
-                  "sh cp -r target/.war* /opt/"
+                  sh 'cp -r target/WebApp.war /opt/'
                 }
             }
         }
